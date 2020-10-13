@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/mobile_navigation"
+    app:startDestination="@+id/navigation_open">
+
+    <fragment
+        android:id="@+id/navigation_open"
+        android:name="com.example.fireappadmin.views.OpenFragment"
+        android:label="@string/open_alerts"
+        tools:layout="@layout/fragment_open" />
+
+    <fragment
+        android:id="@+id/navigation_closed"
+        android:name="com.example.fireappadmin.views.ClosedFragment"
+        android:label="@string/closed_alerts"
+        tools:layout="@layout/fragment_closed" />
+
+</navigation>

@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">FireApp Admin</string>
+    <string name="title_home">Home</string>
+    <string name="title_dashboard">Dashboard</string>
+    <string name="title_notifications">Notifications</string>
+    <string name="open_alerts">Open Alerts</string>
+    <string name="closed_alerts">Closed Alerts</string>
+</resources>
