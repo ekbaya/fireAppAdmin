@@ -5,4 +5,6 @@
     <color name="colorAccent">#ffffff</color>
     <color name="backgroundColor">#F1F1F1</color>
     <color name="blueColor">#03254c</color>
+    <color name="forestGreen">#228c22</color>
+    <color name="cream">#AAA56F</color>
 </resources>
