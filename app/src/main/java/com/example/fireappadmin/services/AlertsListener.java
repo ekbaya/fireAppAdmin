@@ -10,4 +10,8 @@ public interface AlertsListener {
         void onAlertsReceived(List<Alert> alertList);
         void onDatabaseError(DatabaseError error);
     }
+    interface AlertsStatusListener{
+        void onStatusChanged();
+        void onFailure(Exception e);
+    }
 }

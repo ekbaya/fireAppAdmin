@@ -1,7 +1,10 @@
 package com.example.fireappadmin.adapters;
 
+import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.text.format.DateFormat;
@@ -9,6 +12,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -16,7 +20,9 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.fireappadmin.R;
+import com.example.fireappadmin.controllers.AlertAPI;
 import com.example.fireappadmin.models.Alert;
+import com.example.fireappadmin.services.AlertsListener;
 
 import java.util.Calendar;
 import java.util.List;
@@ -25,10 +31,15 @@ import java.util.Locale;
 public class AlertAdapter extends RecyclerView.Adapter<AlertAdapter.MyHolder> {
     private Context context;
     private List<Alert> alertList;
+    private AlertAPI alertAPI;
+    private ProgressDialog dialog;
 
     public AlertAdapter(Context context, List<Alert> alertList) {
         this.context = context;
         this.alertList = alertList;
+        alertAPI = new AlertAPI(context);
+        dialog = new ProgressDialog(context);
+        dialog.setMessage("Wait a moment...");
     }
 
     @NonNull
@@ -66,7 +77,38 @@ public class AlertAdapter extends RecyclerView.Adapter<AlertAdapter.MyHolder> {
         holder.navigateBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startGoogleMapNavigationActivity(alertList.get(position).getLatitude(), alertList.get(position).getLongitude());
+                if (!alertList.get(position).getStatus().equalsIgnoreCase("Closed")){
+                    dialog.show();
+                    alertAPI.updateStatus(alertList.get(position).getTime(), "Assigned");
+                    alertAPI.setAlertsStatusListener(new AlertsListener.AlertsStatusListener() {
+                        @Override
+                        public void onStatusChanged() {
+                            dialog.dismiss();
+                            startGoogleMapNavigationActivity(alertList.get(position).getLatitude(), alertList.get(position).getLongitude());
+                        }
+
+                        @Override
+                        public void onFailure(Exception e) {
+                            dialog.dismiss();
+                            Toast.makeText(context, "Ops! some error occurred, "+e.getMessage(), Toast.LENGTH_LONG).show();
+                        }
+                    });
+                }
+                else {
+                    startGoogleMapNavigationActivity(alertList.get(position).getLatitude(), alertList.get(position).getLongitude());
+                }
+
+            }
+        });
+
+        holder.statusTv.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (!alertList.get(position).getStatus().equalsIgnoreCase("Closed")){
+                    showChangeDialogue(alertList.get(position).getTime());
+                }else {
+                    Toast.makeText(context, "You cannot close an assigned alert case", Toast.LENGTH_SHORT).show();
+                }
             }
         });
     }
@@ -93,6 +135,58 @@ public class AlertAdapter extends RecyclerView.Adapter<AlertAdapter.MyHolder> {
                 Toast.makeText(context, "Please install a map application", Toast.LENGTH_LONG).show();// app is not installed and browser failed to launch the map
             }
         }
+    }
+
+    private void showChangeDialogue(final String timestamp) {
+        //AlertDialog
+        AlertDialog.Builder builder= new AlertDialog.Builder(context);
+        //set Layout Linear Layout
+        LinearLayout linearLayout = new LinearLayout(context);
+        // Views to set in dialog
+        final TextView textView = new TextView(context);
+        textView.setText(R.string.close);
+        textView.setTextSize(20);
+        linearLayout.addView(textView);
+        linearLayout.setPadding(10,10,10,10);
+        builder.setView(linearLayout);
+
+
+        //cancel button
+        builder.setNegativeButton("CANCEL", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog1, int which) {
+                //dismiss dialog
+                dialog1.dismiss();
+            }
+        });
+
+        //Reset pin button
+        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog1, int which) {
+                dialog.show();
+                alertAPI.updateStatus(timestamp, "Closed");
+                alertAPI.setAlertsStatusListener(new AlertsListener.AlertsStatusListener() {
+                    @Override
+                    public void onStatusChanged() {
+                        dialog.dismiss();
+                        Toast.makeText(context, "Alert Marked Solved successfully", Toast.LENGTH_SHORT).show();
+                    }
+
+                    @Override
+                    public void onFailure(Exception e) {
+                        dialog.dismiss();
+                        Toast.makeText(context, "Error Closing an alert, "+e.getMessage(), Toast.LENGTH_SHORT).show();
+
+                    }
+                });
+
+
+            }
+        });
+
+        //create and show dialog
+        builder.create().show();
     }
 
     @Override
