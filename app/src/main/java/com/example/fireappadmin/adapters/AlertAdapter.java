@@ -23,6 +23,7 @@ import com.example.fireappadmin.R;
 import com.example.fireappadmin.controllers.AlertAPI;
 import com.example.fireappadmin.models.Alert;
 import com.example.fireappadmin.services.AlertsListener;
+import com.example.fireappadmin.views.DetailsActivity;
 
 import java.util.Calendar;
 import java.util.List;
@@ -62,7 +63,7 @@ public class AlertAdapter extends RecyclerView.Adapter<AlertAdapter.MyHolder> {
         //Converting timeStamp to dd/mm/yyyy hh:mm am/pm
         Calendar calendar = Calendar.getInstance(Locale.getDefault());
         calendar.setTimeInMillis(Long.parseLong(timestamp));
-        String time = DateFormat.format("dd/MM/yyyy  hh:mm aa", calendar).toString();
+        final String time = DateFormat.format("dd/MM/yyyy  hh:mm aa", calendar).toString();
 
         //set values
         holder.timeTv.setText(time);
@@ -70,7 +71,12 @@ public class AlertAdapter extends RecyclerView.Adapter<AlertAdapter.MyHolder> {
         holder.detailsBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
+               Intent intent = new Intent(context, DetailsActivity.class);
+               intent.putExtra("time", time);
+               intent.putExtra("name", name);
+               intent.putExtra("status", status);
+               intent.putExtra("phone", phone);
+               context.startActivity(intent);
             }
         });
 
