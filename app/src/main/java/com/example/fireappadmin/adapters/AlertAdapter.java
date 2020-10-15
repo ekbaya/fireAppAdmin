@@ -84,18 +84,15 @@ public class AlertAdapter extends RecyclerView.Adapter<AlertAdapter.MyHolder> {
             @Override
             public void onClick(View view) {
                 if (!alertList.get(position).getStatus().equalsIgnoreCase("Closed")){
-                    dialog.show();
                     alertAPI.updateStatus(alertList.get(position).getTime(), "Assigned");
                     alertAPI.setAlertsStatusListener(new AlertsListener.AlertsStatusListener() {
                         @Override
                         public void onStatusChanged() {
-                            dialog.dismiss();
                             startGoogleMapNavigationActivity(alertList.get(position).getLatitude(), alertList.get(position).getLongitude());
                         }
 
                         @Override
                         public void onFailure(Exception e) {
-                            dialog.dismiss();
                             Toast.makeText(context, "Ops! some error occurred, "+e.getMessage(), Toast.LENGTH_LONG).show();
                         }
                     });
@@ -153,7 +150,7 @@ public class AlertAdapter extends RecyclerView.Adapter<AlertAdapter.MyHolder> {
         textView.setText(R.string.close);
         textView.setTextSize(20);
         linearLayout.addView(textView);
-        linearLayout.setPadding(10,10,10,10);
+        linearLayout.setPadding(10,10,10,30);
         builder.setView(linearLayout);
 
 
