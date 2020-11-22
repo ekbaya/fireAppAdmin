@@ -79,7 +79,7 @@
                     android:textSize="18sp"
                     android:text="@string/details"
                     android:background="@drawable/details_bg"
-                    android:textColor="@color/colorAccent"
+                    android:textColor="#ffffff"
                     android:textStyle="bold"
                     android:layout_weight="1"
                     android:layout_marginRight="10dp"
